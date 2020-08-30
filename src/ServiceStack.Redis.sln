@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console.Tests", "..\tests\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceStack.Redis.Tests.Sentinel", "..\tests\ServiceStack.Redis.Tests.Sentinel\ServiceStack.Redis.Tests.Sentinel.csproj", "{91C55091-A946-49B5-9517-8794EBCC5784}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceStack.Common", "..\..\ServiceStack\src\ServiceStack.Common\ServiceStack.Common.csproj", "{98E62456-EEF4-4083-8082-2C891D3E0AEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,18 @@ Global
 		{91C55091-A946-49B5-9517-8794EBCC5784}.Release|x64.ActiveCfg = Release|Any CPU
 		{91C55091-A946-49B5-9517-8794EBCC5784}.Release|x64.Build.0 = Release|Any CPU
 		{91C55091-A946-49B5-9517-8794EBCC5784}.Release|x86.ActiveCfg = Release|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Debug|x64.Build.0 = Debug|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Debug|x86.Build.0 = Debug|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Release|x64.ActiveCfg = Release|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Release|x64.Build.0 = Release|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Release|x86.ActiveCfg = Release|Any CPU
+		{98E62456-EEF4-4083-8082-2C891D3E0AEB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

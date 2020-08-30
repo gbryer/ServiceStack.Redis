@@ -979,6 +979,12 @@ namespace ServiceStack.Redis
                 throw CreateResponseError("Invalid length");
             }
 
+            // if (c == '*')
+            // {
+            //
+            //     ReadComplexResponse();
+            // }
+
             if (c == ':' || c == '+')
             {
                 //match the return value
@@ -1017,18 +1023,123 @@ namespace ServiceStack.Redis
                             return TypeConstants.EmptyByteArrayArray;
                         }
 
-                        var result = new byte[count][];
+                        static T[] JoinArrays<T>(T separator, IEnumerable<T[]> arrays)
+                        {
+                            // Make sure we only iterate over arrays once
+                            List<T[]> list = arrays.ToList();
+                            if (list.Count == 0)
+                            {
+                                return new T[0];
+                            }
+
+                            int size = list.Sum(x => x.Length) + list.Count - 1;
+                            T[] ret = new T[size];
+                            int index = 0;
+                            bool first = true;
+                            foreach (T[] array in list)
+                            {
+                                if (!first)
+                                {
+                                    ret[index++] = separator;
+                                }
+
+                                Array.Copy(array, 0, ret, index, array.Length);
+                                index += array.Length;
+                                first = false;
+                            }
+
+                            return ret;
+                        }
+
+                        var result = new RedisData[count];
 
                         for (int i = 0; i < count; i++)
-                            result[i] = ReadData();
+                            result[i] = ReadComplexResponse();
+                            // result[i] = ReadData();
 
-                        return result;
+                        return result.Select(x => x.Children == null ? x.Data : JoinArrays((byte) 0x00, x.Children.Select(x => x.Data))).ToArray();
+                        // return result;
                     }
                     break;
             }
 
             throw CreateResponseError("Unknown reply on multi-request: " + c + s);
         }
+
+
+        // private RedisData[] ReadMultiComplexData()
+        // {
+        //     int c = SafeReadByte(nameof(ReadMultiData));
+        //     if (c == -1)
+        //         throw CreateNoMoreDataError();
+        //
+        //     var s = ReadLine();
+        //     if (log.IsDebugEnabled)
+        //         Log("R: {0}", s);
+        //
+        //     switch (c)
+        //     {
+        //         // Some commands like BRPOPLPUSH may return Bulk Reply instead of Multi-bulk
+        //         case '$':
+        //             var t = new RedisData[2];
+        //             t[1] = new RedisData()
+        //             {
+        //                 Data = ParseSingleLine(string.Concat(char.ToString((char) c), s))
+        //             };
+        //             return t;
+        //
+        //         case '-':
+        //             throw CreateResponseError(s.StartsWith("ERR") ? s.Substring(4) : s);
+        //
+        //         case '*':
+        //             if (int.TryParse(s, out var count))
+        //             {
+        //                 if (count == -1)
+        //                 {
+        //                     //redis is in an invalid state
+        //                     return new RedisData[0]; // TypeConstants.EmptyByteArrayArray;
+        //                 }
+        //
+        //                 var result = new RedisData[count];
+        //
+        //                 for (int i = 0; i < count; i++)
+        //                     result[i] = ReadComplexResponse();
+        //                 // result[i] = ReadData();
+        //
+        //
+        //                 static T[] JoinArrays<T>(T separator, IEnumerable<T[]> arrays)
+        //                 {
+        //                     // Make sure we only iterate over arrays once
+        //                     List<T[]> list = arrays.ToList();
+        //                     if (list.Count == 0)
+        //                     {
+        //                         return new T[0];
+        //                     }
+        //                     int size = list.Sum(x => x.Length) + list.Count - 1;
+        //                     T[] ret = new T[size];
+        //                     int index = 0;
+        //                     bool first = true;
+        //                     foreach (T[] array in list)
+        //                     {
+        //                         if (!first)
+        //                         {
+        //                             ret[index++] = separator;
+        //                         }
+        //                         Array.Copy(array, 0, ret, index, array.Length);
+        //                         index += array.Length;
+        //                         first = false;
+        //                     }
+        //                     return ret;
+        //                 }
+        //
+        //                 return result.Select(x => x.Children == null ? x.Data : JoinArrays((byte)'s', x.Children.Select(x => x.Data))).ToArray();
+        //                 // return result;
+        //             }
+        //             break;
+        //     }
+        //
+        //     throw CreateResponseError("Unknown reply on multi-request: " + c + s);
+        // }
 
         private object[] ReadDeeplyNestedMultiData()
         {

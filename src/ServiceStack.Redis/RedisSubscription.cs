@@ -9,7 +9,7 @@ namespace ServiceStack.Redis
     {
         private readonly IRedisNativeClient redisClient;
         private List<string> activeChannels;
-		public long SubscriptionCount { get; private set; }
+        public long SubscriptionCount { get; private set; }
         public bool IsPSubscription { get; private set; }
 
         private const int MsgIndex = 2;
@@ -57,6 +57,28 @@ namespace ServiceStack.Redis
             }
         }
 
+        private byte[][] SplitByteArray(byte[] input, byte separator, bool ignoreEmptyEntries = false)
+        {
+            var subArrays = new List<byte[]>();
+            var start = 0;
+            for (var i = 0; i <= input.Length; ++i)
+            {
+                if (input.Length == i || input[i] == separator)
+                {
+                    if (i - start > 0 || ignoreEmptyEntries)
+                    {
+                        var destination = new byte[i - start];
+                        Array.Copy(input, start, destination, 0, i - start);
+                        subArrays.Add(destination);
+                    }
+                    start = i + 1;
+                }
+            }
+
+            return subArrays.ToArray();
+        }
+
+
         private void ParseSubscriptionResults(byte[][] multiBytes)
         {
             int componentsPerMsg = IsPSubscription ? 4 : 3;
@@ -79,7 +101,7 @@ namespace ServiceStack.Redis
                     }
                 }
                 else if (UnSubscribeWord.AreEqual(messageType)
-                    || PUnSubscribeWord.AreEqual(messageType))
+                         || PUnSubscribeWord.AreEqual(messageType))
                 {
                     this.SubscriptionCount = int.Parse(multiBytes[i + 2].FromUtf8Bytes());
 
@@ -93,30 +115,41 @@ namespace ServiceStack.Redis
                 else if (MessageWord.AreEqual(messageType))
                 {
                     var msgBytes = multiBytes[i + MsgIndex];
-                    if (this.OnMessageBytes != null)
+                    var messages = SplitByteArray(msgBytes, (byte) 0x00, true);
+
+                    foreach (var msg in messages)
                     {
-                        this.OnMessageBytes(channel, msgBytes);
-                    }
-                    
-                    var message = msgBytes.FromUtf8Bytes();
-                    if (this.OnMessage != null)
-                    {
-                        this.OnMessage(channel, message);
+                        if (this.OnMessageBytes != null)
+                        {
+                            this.OnMessageBytes(channel, msg);
+                        }
+
+                        var message = msg.FromUtf8Bytes();
+                        if (this.OnMessage != null)
+                        {
+                            this.OnMessage(channel, message);
+                        }
                     }
                 }
                 else if (PMessageWord.AreEqual(messageType))
                 {
                     channel = multiBytes[i + 2].FromUtf8Bytes();
-                    var msgBytes = multiBytes[i + MsgIndex + 1];
-                    if (this.OnMessageBytes != null)
+
+                    var msgBytes = multiBytes[i + MsgIndex + 1];  
+                    var messages = SplitByteArray(msgBytes, (byte) 0x00, true);
+
+                    foreach (var msg in messages)
                     {
-                        this.OnMessageBytes(channel, msgBytes);
-                    }
-                    
-                    var message = msgBytes.FromUtf8Bytes();
-                    if (this.OnMessage != null)
-                    {
-                        this.OnMessage(channel, message);
+                        if (this.OnMessageBytes != null)
+                        {
+                            this.OnMessageBytes(channel, msg);
+                        }
+
+                        var message = msg.FromUtf8Bytes();
+                        if (this.OnMessage != null)
+                        {
+                            this.OnMessage(channel, message);
+                        }
                     }
                 }
                 else

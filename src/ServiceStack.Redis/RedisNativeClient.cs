@@ -2110,6 +2110,12 @@ namespace ServiceStack.Redis
             return ReadMultiData();
         }
 
+        // public RedisData[] ReceiveComplexMessages()
+        // {
+        //     return ReadMultiComplexData();
+        // }
+
+
         public virtual IRedisSubscription CreateSubscription()
         {
             return new RedisSubscription(this);

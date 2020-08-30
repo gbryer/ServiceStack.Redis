@@ -11,9 +11,6 @@
     </PackageDescription>
     <PackageTags>Redis;NoSQL;Client;Distributed;Cache;PubSub;Messaging;Transactions</PackageTags>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="ServiceStack.Common" Version="$(Version)" />
-  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System.Net" />
   </ItemGroup>
@@ -24,6 +21,9 @@
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ServiceStack.Common" Version="5.9.2" />
   </ItemGroup>
   
 </Project>
